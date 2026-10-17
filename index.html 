@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doremon AI</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #081225;
+      color: white;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #102447;
+      border-bottom: 1px solid #244779;
+    }
+
+    header h1 {
+      color: #45caff;
+      margin: 0;
+    }
+
+    header p {
+      color: #b8c9e8;
+      margin-bottom: 0;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 25px auto;
+      padding: 15px;
+    }
+
+    .welcome {
+      text-align: center;
+      padding: 25px 10px;
+    }
+
+    .robot {
+      font-size: 65px;
+    }
+
+    .welcome h2 {
+      color: #45caff;
+    }
+
+    #chat {
+      height: 300px;
+      overflow-y: auto;
+      padding: 15px;
+      background: #101e35;
+      border: 1px solid #263f66;
+      border-radius: 15px;
+    }
+
+    .message {
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+
+    .user {
+      background: #164c83;
+      text-align: right;
+    }
+
+    .bot {
+      background: #1b2b45;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #365578;
+      background: #101e35;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 15px;
+      border: none;
+      border-radius: 10px;
+      background: #168bd2;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:active {
+      opacity: 0.8;
+    }
+
+    .extra {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .extra button {
+      flex: 1;
+      background: #203b61;
+    }
+
+    footer {
+      text-align: center;
+      color: #8da6c9;
+      padding: 20px;
+      font-size: 13px;
+    }
+  </style></head><body>
+  <header>
+    <h1>💙 Doremon AI</h1>
+    <p>Your smart AI companion</p>
+  </header>  <main>
+    <section class="welcome">
+      <div class="robot">🤖</div>
+      <h2>Hello, I'm Doremon!</h2>
+      <p>Ask me anything. Let's explore together!</p>
+    </section><section id="chat" aria-live="polite">
+  <div class="message bot">
+    💙 Namaste bhai! Main Doremon AI hoon.
+    Abhi mera basic demo version hai. Aage hum
+    real AI aur voice features connect karenge!
+  </div>
+</section>
+
+<div class="controls">
+  <input id="question" type="text"
+    placeholder="Message Doremon..."
+    aria-label="Your message">
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<div class="extra">
+  <button onclick="startVoice()">🎙️ Speak</button>
+  <button onclick="readLastReply()">🔊 Read Reply</button>
+</div>
+
+  </main>  <footer>
+    Doremon AI • Built with 💙
+  </footer>  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("question");
+    let lastReply = "";
+
+    function addMessage(text, type) {
+      const message = document.createElement("div");
+      message.className = "message " + type;
+      message.textContent = text;
+      chat.appendChild(message);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function sendMessage() {
+      const question = input.value.trim();
+
+      if (!question) return;
+
+      addMessage("You: " + question, "user");
+      input.value = "";
+
+      const reply =
+        "Bhai, main Doremon AI hoon! Abhi mera demo mode hai. " +
+        "Real AI answers ke liye agle step mein AI model connect karenge.";
+
+      lastReply = reply;
+      addMessage(reply, "bot");
+    }
+
+    input.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") sendMessage();
+    });
+
+    function startVoice() {
+      const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        alert("Voice input ke liye Android Chrome try karo.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = "hi-IN";
+      recognition.onresult = function(event) {
+        input.value = event.results[0][0].transcript;
+        sendMessage();
+      };
+
+      recognition.start();
+    }
+
+    function readLastReply() {
+      if (!lastReply) {
+        alert("Pehle Doremon ko message bhejo!");
+        return;
+      }
+
+      const speech = new SpeechSynthesisUtterance(lastReply);
+      speech.lang = "hi-IN";
+      speechSynthesis.speak(speech);
+    }
+  </script></body>
+</html>

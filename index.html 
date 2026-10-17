@@ -169,54 +169,40 @@
     }
 
     function sendMessage() {
-      const question = input.value.trim();
+      async function sendMessage() {
+  const question = input.value.trim();
+  if (!question) return;
 
-      if (!question) return;
+  addMessage("You: " + question, "user");
+  input.value = "";
 
-      addMessage("You: " + question, "user");
-      input.value = "";
+  const loading = document.createElement("div");
+  loading.className = "message bot";
+  loading.textContent = "Doremon soch raha hai... 💭";
+  chat.appendChild(loading);
 
-      const reply =
-        "Bhai, main Doremon AI hoon! Abhi mera demo mode hai. " +
-        "Real AI answers ke liye agle step mein AI model connect karenge.";
-
-      lastReply = reply;
-      addMessage(reply, "bot");
-    }
-
-    input.addEventListener("keydown", function(event) {
-      if (event.key === "Enter") sendMessage();
+  try {
+    const response = await fetch("/.netlify/functions/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: question })
     });
 
-    function startVoice() {
-      const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
+    const data = await response.json();
+    loading.remove();
 
-      if (!SpeechRecognition) {
-        alert("Voice input ke liye Android Chrome try karo.");
-        return;
-      }
-
-      const recognition = new SpeechRecognition();
-      recognition.lang = "hi-IN";
-      recognition.onresult = function(event) {
-        input.value = event.results[0][0].transcript;
-        sendMessage();
-      };
-
-      recognition.start();
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed");
     }
 
-    function readLastReply() {
-      if (!lastReply) {
-        alert("Pehle Doremon ko message bhejo!");
-        return;
-      }
+    lastReply = data.reply;
+    addMessage(lastReply, "bot");
 
-      const speech = new SpeechSynthesisUtterance(lastReply);
-      speech.lang = "hi-IN";
-      speechSynthesis.speak(speech);
-    }
+  } catch (error) {
+    loading.remove();
+    addMessage("Bhai, AI connect nahi hua. Deployment check karna hoga.", "bot");
+    console.error(error);
+  }
+}
   </script></body>
 </html>
